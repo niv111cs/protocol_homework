@@ -9,6 +9,7 @@ public class Garage {
     private List<Vehicle> vehicles;
     private int currentIndex = 0;
     private int remainingFixTime = 0;
+    private ScheduledExecutorService executor;
 
     public Garage(Protocol_Garage protocol, List<Vehicle> vehicles) {
         this.protocol = protocol;
@@ -16,7 +17,7 @@ public class Garage {
     }
 
     public void start() {
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(() -> tick(), 0, 1, TimeUnit.SECONDS);
     }
 
@@ -44,6 +45,14 @@ public class Garage {
             // כאשר כל הרכבים תוקנו
             System.out.println("כל כלי הרכב תוקנו!");
             protocol.fixed();
+            stop();
+        }
+    }
+
+    private void stop() {
+        if (executor != null && !executor.isShutdown()) {
+            executor.shutdown();
+            System.out.println("המוסך עצר את פעולתו.");
         }
     }
 }
